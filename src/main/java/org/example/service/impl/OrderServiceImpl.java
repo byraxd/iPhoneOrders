@@ -41,22 +41,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order updateOrder(Long id, Order order) {
+        if(id == null || order == null) throw new NullPointerException("id or order is null");
 
         try {
+            Order orderForUpdate = orderRepository.findById(id).orElseThrow(() -> new NoSuchElementException("order not found by following id"));
 
+            orderForUpdate.setUser(order.getUser());
+            orderForUpdate.setProducts(order.getProducts());
+            orderForUpdate.setIsPaid(order.getIsPaid());
+
+            return orderRepository.save(orderForUpdate);
         }catch (OptimisticLockException e){
             throw new OptimisticLockException("Another user updated this record already", e);
         }
-
-        if(id == null || order == null) throw new NullPointerException("id or order is null");
-
-        Order orderForUpdate = orderRepository.findById(id).orElseThrow(() -> new NoSuchElementException("order not found by following id"));
-
-        orderForUpdate.setUser(order.getUser());
-        orderForUpdate.setProducts(order.getProducts());
-        orderForUpdate.setIsPaid(order.getIsPaid());
-
-        return orderRepository.save(orderForUpdate);
     }
 
     @Override

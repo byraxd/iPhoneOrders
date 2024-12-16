@@ -49,9 +49,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUserById(Long id, User user) {
-        try {
-            if (id == null || user == null) throw new NullPointerException("id or user is null");
+        if (id == null || user == null) throw new NullPointerException("id or user is null");
 
+        try {
             User userForUpdate = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("user not found with following id"));
 
             userForUpdate.setUsername(user.getUsername());

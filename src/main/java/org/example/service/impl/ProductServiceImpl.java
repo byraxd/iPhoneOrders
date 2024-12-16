@@ -49,9 +49,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProductById(Long id, Product product) {
-        try {
-            if (id == null || product == null) throw new NullPointerException("id or product is null");
+        if (id == null || product == null) throw new NullPointerException("id or product is null");
 
+        try {
             Product productForUpdate = productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Product not found by following id"));
 
             productForUpdate.setName(product.getName());
