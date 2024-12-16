@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.dto.ProductDto;
 import org.example.model.Product;
 import org.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,23 +26,28 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
+    @GetMapping("/available")
+    public ResponseEntity<List<Product>> getAvailableProducts() {
+        return ResponseEntity.ok(productService.getAllByIsAvailableTrue());
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<Product> getProductById(@PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        return new ResponseEntity<>(productService.addProduct(product), HttpStatus.CREATED);
+    public ResponseEntity<Product> createProduct(@RequestBody ProductDto productDto) {
+        return new ResponseEntity<>(productService.addProduct(productDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        return ResponseEntity.ok(productService.updateProductById(id, product));
+    public ResponseEntity<Product> updateProduct(@PathVariable(name = "id") Long id, @RequestBody ProductDto productDto) {
+        return ResponseEntity.ok(productService.updateProductById(id, productDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<String> deleteProduct(@PathVariable(name = "id") Long id) {
         productService.deleteProductById(id);
 
         return ResponseEntity.ok("Operation was done successfully");

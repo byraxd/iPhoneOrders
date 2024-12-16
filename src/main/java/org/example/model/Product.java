@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.Instant;
 
 @Entity
 @Data
@@ -29,6 +33,13 @@ public class Product {
 
     @Column(nullable = false)
     private Long quantity;
+
+    @CreatedDate
+    @Column(nullable = false)
+    private Instant createdAt;
+
+    @LastModifiedDate
+    private Instant updatedAt;
 
     @Version
     private Long version;

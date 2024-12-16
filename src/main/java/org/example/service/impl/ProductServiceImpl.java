@@ -1,12 +1,14 @@
 package org.example.service.impl;
 
 import jakarta.persistence.OptimisticLockException;
+import org.example.dto.ProductDto;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 import org.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -26,6 +28,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> getAllByIsAvailableTrue() {
+        return productRepository.findAllByIsAvailableTrue();
+    }
+
+    @Override
     public Product getProductById(Long id) {
         if (id == null) throw new NullPointerException("id is null");
 
@@ -33,31 +40,34 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product addProduct(Product product) {
-        if (product == null) throw new NullPointerException("product is null");
+    public Product addProduct(ProductDto productDto) {
+        if (productDto == null) throw new NullPointerException("product is null");
 
         return productRepository.save(
                 Product
                         .builder()
-                        .name(product.getName())
-                        .price(product.getPrice())
-                        .isAvailable(product.getIsAvailable())
-                        .quantity(product.getQuantity())
+                        .name(productDto.getName())
+                        .price(productDto.getPrice())
+                        .isAvailable(productDto.getIsAvailable())
+                        .quantity(productDto.getQuantity())
+                        .createdAt(Instant.now())
                         .build()
         );
     }
 
     @Override
-    public Product updateProductById(Long id, Product product) {
-        if (id == null || product == null) throw new NullPointerException("id or product is null");
+    public Product updateProductById(Long id, ProductDto productDto) {
+        if (id == null || productDto == null) throw new NullPointerException("id or product is null");
 
         try {
             Product productForUpdate = productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Product not found by following id"));
 
-            productForUpdate.setName(product.getName());
-            productForUpdate.setPrice(product.getPrice());
-            productForUpdate.setIsAvailable(product.getIsAvailable());
-            productForUpdate.setQuantity(product.getQuantity());
+            productForUpdate.setName(productDto.getName());
+            productForUpdate.setPrice(productDto.getPrice());
+            productForUpdate.setIsAvailable(productDto.getIsAvailable());
+            productForUpdate.setQuantity(productDto.getQuantity());
+
+            productForUpdate.setUpdatedAt(Instant.now());
 
             return productRepository.save(productForUpdate);
         } catch (OptimisticLockException e) {
