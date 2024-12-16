@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.dto.UserDto;
 import org.example.model.User;
 import org.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,22 +27,22 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<User> getUserById(@PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody User user) {
-        return new ResponseEntity<>(userService.addUser(user), HttpStatus.CREATED);
+    public ResponseEntity<User> addUser(@RequestBody UserDto userDto) {
+        return new ResponseEntity<>(userService.addUser(userDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        return ResponseEntity.ok(userService.updateUserById(id, user));
+    public ResponseEntity<User> updateUser(@PathVariable(name = "id") Long id, @RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.updateUserById(id, userDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<String> deleteUser(@PathVariable(name = "id") Long id) {
         userService.deleteUserById(id);
 
         return ResponseEntity.ok("Deleting operation was done successfully");

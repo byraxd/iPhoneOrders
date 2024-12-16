@@ -1,12 +1,14 @@
 package org.example.service.impl;
 
 import jakarta.persistence.OptimisticLockException;
+import org.example.dto.UserDto;
 import org.example.model.User;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -33,31 +35,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addUser(User user) {
-        if (user == null) throw new NullPointerException("user is null");
+    public User addUser(UserDto userDto) {
+        if (userDto == null) throw new NullPointerException("user is null");
 
         return userRepository.save(
                 User
                         .builder()
-                        .username(user.getUsername())
-                        .password(user.getPassword())
-                        .email(user.getEmail())
-                        .walletBalance(user.getWalletBalance())
+                        .username(userDto.getUsername())
+                        .password(userDto.getPassword())
+                        .email(userDto.getEmail())
+                        .walletBalance(userDto.getWalletBalance())
+                        .createdAt(Instant.now())
                         .build()
         );
     }
 
     @Override
-    public User updateUserById(Long id, User user) {
-        if (id == null || user == null) throw new NullPointerException("id or user is null");
+    public User updateUserById(Long id, UserDto userDto) {
+        if (id == null || userDto == null) throw new NullPointerException("id or user is null");
 
         try {
             User userForUpdate = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("user not found with following id"));
 
-            userForUpdate.setUsername(user.getUsername());
-            userForUpdate.setPassword(user.getPassword());
-            userForUpdate.setEmail(user.getEmail());
-            userForUpdate.setWalletBalance(user.getWalletBalance());
+            userForUpdate.setUsername(userDto.getUsername());
+            userForUpdate.setPassword(userDto.getPassword());
+            userForUpdate.setEmail(userDto.getEmail());
+            userForUpdate.setWalletBalance(userDto.getWalletBalance());
+
+            userForUpdate.setUpdatedAt(Instant.now());
 
             return userRepository.save(userForUpdate);
         } catch (OptimisticLockException e) {

@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.dto.UserDto;
 import org.example.model.User;
 
 import java.util.List;
@@ -10,9 +11,9 @@ public interface UserService {
 
     User getUserById(Long id);
 
-    User addUser(User user);
+    User addUser(UserDto userDto);
 
-    User updateUserById(Long id, User user);
+    User updateUserById(Long id, UserDto userDto);
 
     void deleteUserById(Long id);
 }
