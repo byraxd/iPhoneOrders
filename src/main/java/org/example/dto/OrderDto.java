@@ -15,5 +15,4 @@ public class OrderDto {
 
     private Long userId;
     private List<Long> productsIds;
-    private Boolean isPaid;
 }
