@@ -1,7 +1,6 @@
 package org.example.controller;
 
 import org.example.dto.OrderDto;
-import org.example.dto.PayRequestDto;
 import org.example.model.Order;
 import org.example.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,9 @@ public class OrderController {
         return new ResponseEntity<>(orderService.createOrder(orderDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/pay")
-    public ResponseEntity<Order> payOrder(@RequestBody PayRequestDto payRequestDto) {
-        return ResponseEntity.ok(orderService.payForOrder(payRequestDto));
+    @PutMapping("/pay/{orderId}")
+    public ResponseEntity<Order> payOrder(@PathVariable(name = "orderId") Long orderId) {
+        return ResponseEntity.ok(orderService.payForOrder(orderId));
     }
 
     @PutMapping("/{id}")

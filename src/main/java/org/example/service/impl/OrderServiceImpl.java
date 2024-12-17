@@ -2,7 +2,6 @@ package org.example.service.impl;
 
 import jakarta.persistence.OptimisticLockException;
 import org.example.dto.OrderDto;
-import org.example.dto.PayRequestDto;
 import org.example.model.Order;
 import org.example.model.Product;
 import org.example.model.User;
@@ -13,6 +12,7 @@ import org.example.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -62,7 +62,6 @@ public class OrderServiceImpl implements OrderService {
 
             orderForUpdate.setUser(user);
             orderForUpdate.setProducts(convertIdsIntoProducts(orderDto.getProductsIds()));
-            orderForUpdate.setIsPaid(orderDto.getIsPaid());
 
             orderForUpdate.setUpdatedAt(Instant.now());
 
@@ -81,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Scheduled(fixedRate = 120000)
+    @Scheduled(fixedRate = 60000)
     public void deleteExpiredOrders() {
         List<Order> orders = orderRepository.findAllByIsPaidFalse();
 
@@ -92,14 +91,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order payForOrder(PayRequestDto payRequestDto) {
-        if (payRequestDto == null) throw new NullPointerException("payRequest is null");
+    @Transactional
+    public Order payForOrder(Long orderId) {
+        if (orderId == null) throw new NullPointerException("payRequest is null");
 
-        User user = userRepository.findById(payRequestDto.getUserId()).orElseThrow(() -> new NoSuchElementException("user not found"));
-        Order order = orderRepository.findByIdAndIsPaidFalse(payRequestDto.getOrderId()).orElseThrow(() -> new NoSuchElementException("order not found by following id or order already paid"));
+        Order order = orderRepository.findByIdAndIsPaidFalse(orderId).orElseThrow(() -> new NoSuchElementException("order not found by following id or order already paid"));
+        User user = userRepository.findById(order.getUser().getId()).orElseThrow(() -> new NoSuchElementException("user not found"));
 
-        if (user.getWalletBalance() < getPriceOfAllProducts(order))
-            throw new IllegalArgumentException("User haven't enough money for order");
+        if (user.getWalletBalance() < getPriceOfAllProducts(order)) throw new IllegalArgumentException("User haven't enough money for order");
 
         user.setWalletBalance(user.getWalletBalance() - getPriceOfAllProducts(order));
 
